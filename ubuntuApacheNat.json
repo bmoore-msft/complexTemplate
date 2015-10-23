@@ -19,6 +19,8 @@
         }
     },
     "variables": {
+        "iisConfigurationScriptLocation":"https://sdaviesms.blob.core.windows.net/customscripts/install-iis-and-default-web-app.ps1",
+	"iisConfigurationScriptFile":"install-iis-and-default-web-app.ps1",
         "newStorageAccountPrefix": "[concat(parameters('uniqueNamePrefix'), 'sa')]",
         "addressPrefix": "10.0.0.0/16",
         "subnetPrefix": "10.0.0.0/24",
@@ -37,9 +39,9 @@
         "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/bepool1')]",
         "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]",
         "osType": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "15.04",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2012-R2-Datacenter",
             "version": "latest"
         },
         "imageReference": "[variables('osType')]"
@@ -157,7 +159,8 @@
                     "protocol": "tcp",
                     "frontendPortRangeStart": 50000,
                     "frontendPortRangeEnd": 50500,
-                    "backendPort": 22
+                    "backendPort": 3389,
+                    "enableFloatingIP": false
                 }
             }
         ]
@@ -231,26 +234,24 @@
                             }
                         }]
                     },
-                    "extensionProfile": {
-                        "extensions": [
-                            {
-                                "name": "[concat('negathahahaha','e')]",
-                                "properties": {
-                                    "publisher": "Microsoft.OSTCExtensions",
-                                    "type": "CustomScriptForLinux",
-                                    "typeHandlerVersion": "1.3",
-                                    "autoUpgradeMinorVersion": true,
-                                    "settings": {
-                                        "fileUris": [
-                                            "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/apache2-on-ubuntu-vm/install_apache.sh"
-                                        ],
-                                        "commandToExecute": "sh install_apache.sh"
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
+                    "extensionProfile":{
+		      "extensions":[
+			{
+			  "name":"iisInstall",
+			  "properties":{
+			  "publisher":"Microsoft.Compute",
+			  "type":"CustomScriptExtension",
+			  "typeHandlerVersion":"1.4",
+			  "autoUpgradeMinorVersion":false,
+			  "settings":{
+			  "fileUris":["[variables('iisConfigurationScriptLocation')]"],
+			  "commandToExecute":"[concat('powershell -ExecutionPolicy Unrestricted -file ',variables('iisConfigurationScriptFile'))]"
+			}
+		      }
+		    }
+		  ]
+		}
+              }
             }
         }
     ]
