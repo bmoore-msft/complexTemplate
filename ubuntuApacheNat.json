@@ -247,6 +247,21 @@
                                         "commandToExecute": "sh install_apache.sh"
                                     }
                                 }
+                            },
+                            {
+                                "name": "negatflaskinstall",
+                                "properties": {
+                                    "publisher": "Microsoft.OSTCExtensions",
+                                    "type": "CustomScriptForLinux",
+                                    "typeHandlerVersion": "1.3",
+                                    "autoUpgradeMinorVersion": true,
+                                    "settings": {
+                                        "fileUris": [
+                                            "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/apache2-on-ubuntu-vm/install_apache.sh"
+                                        ],
+                                        "commandToExecute": "sh install_apache.sh"
+                                    }
+                                }
                             }
                         ]
                     }
