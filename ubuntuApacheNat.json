@@ -40,12 +40,15 @@
             "sku": "15.04",
             "version": "latest"
         },
-        "imageReference": "[variables('osType')]"
+        "imageReference": "[variables('osType')]",
+        "storageAccountPrefix": [ 
+	       "b","h","n","t","z" 
+       ]
     },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[concat(variables('newStorageAccountPrefix'), copyindex())]",
+            "name": "[concat(variables('storageAccountPrefix')[copyindex()], variables('newStorageAccountPrefix'))]",
             "apiVersion": "2015-05-01-preview",
             "copy": {
                 "name": "storageLoop",
@@ -138,11 +141,11 @@
                 "vmsstag1": "Myriad"
             },
             "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountPrefix'), '0')]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountPrefix'), '1')]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountPrefix'), '2')]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountPrefix'), '3')]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountPrefix'), '4')]",
+	        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountPrefix')[0], variables('newStorageAccountPrefix'))]",
+	        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountPrefix')[1], variables('newStorageAccountPrefix'))]",
+	        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountPrefix')[2], variables('newStorageAccountPrefix'))]",
+	        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountPrefix')[3], variables('newStorageAccountPrefix'))]",
+	        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountPrefix')[4], variables('newStorageAccountPrefix'))]",
                 "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
                 "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
@@ -159,11 +162,11 @@
                     "storageProfile": {
                         "osDisk": {
                             "vhdContainers": [
-                                "[concat('https://', variables('newStorageAccountPrefix'), '0.blob.core.windows.net/vmss')]",
-                                "[concat('https://', variables('newStorageAccountPrefix'), '1.blob.core.windows.net/vmss')]",
-                                "[concat('https://', variables('newStorageAccountPrefix'), '2.blob.core.windows.net/vmss')]",
-                                "[concat('https://', variables('newStorageAccountPrefix'), '3.blob.core.windows.net/vmss')]",
-                                "[concat('https://', variables('newStorageAccountPrefix'), '4.blob.core.windows.net/vmss')]"
+                                "[concat('https://', variables('storageAccountPrefix')[0], variables('newStorageAccountPrefix'), '.blob.core.windows.net/vmss')]",
+                                "[concat('https://', variables('storageAccountPrefix')[1], variables('newStorageAccountPrefix'), '.blob.core.windows.net/vmss')]",
+                                "[concat('https://', variables('storageAccountPrefix')[2], variables('newStorageAccountPrefix'), '.blob.core.windows.net/vmss')]",
+                                "[concat('https://', variables('storageAccountPrefix')[3], variables('newStorageAccountPrefix'), '.blob.core.windows.net/vmss')]",
+                                "[concat('https://', variables('storageAccountPrefix')[4], variables('newStorageAccountPrefix'), '.blob.core.windows.net/vmss')]"
                             ],
                             "name": "vmssosdisk",
                             "caching": "ReadOnly",
