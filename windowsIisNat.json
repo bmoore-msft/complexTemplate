@@ -19,8 +19,6 @@
         }
     },
     "variables": {
-        "iisConfigurationScriptLocation":"https://sdaviesms.blob.core.windows.net/customscripts/install-iis-and-default-web-app.ps1",
-	"iisConfigurationScriptFile":"install-iis-and-default-web-app.ps1",
         "newStorageAccountPrefix": "[concat(parameters('uniqueNamePrefix'), 'sa')]",
         "addressPrefix": "10.0.0.0/16",
         "subnetPrefix": "10.0.0.0/24",
@@ -36,8 +34,6 @@
         "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
         "nicId": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
         "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
-        "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/bepool1')]",
-        "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]",
         "osType": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
@@ -115,38 +111,6 @@
         "backendAddressPools": [
           {
             "name": "bepool1"
-          }
-        ],
-        "loadBalancingRules": [
-          {
-            "name": "LBRule",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 80,
-              "backendPort": 80,
-              "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          }
-        ],
-        "probes": [
-          {
-            "name": "tcpProbe",
-            "properties": {
-              "protocol": "tcp",
-              "port": 80,
-              "intervalInSeconds": "5",
-              "numberOfProbes": "2"
-            }
           }
         ],
         "inboundNatPools": [
@@ -233,24 +197,7 @@
                                 ]
                             }
                         }]
-                    },
-                    "extensionProfile":{
-		      "extensions":[
-			{
-			  "name":"iisInstall",
-			  "properties":{
-			  "publisher":"Microsoft.Compute",
-			  "type":"CustomScriptExtension",
-			  "typeHandlerVersion":"1.4",
-			  "autoUpgradeMinorVersion":false,
-			  "settings":{
-			  "fileUris":["[variables('iisConfigurationScriptLocation')]"],
-			  "commandToExecute":"[concat('powershell -ExecutionPolicy Unrestricted -file ',variables('iisConfigurationScriptFile'))]"
-			}
-		      }
-		    }
-		  ]
-		}
+                    }
               }
             }
         }
