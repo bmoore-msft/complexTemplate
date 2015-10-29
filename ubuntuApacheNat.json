@@ -2,6 +2,25 @@
   "$schema":"http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
   "contentVersion":"1.0.0.0",
   "parameters":{
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "East US",
+        "West US",
+        "Central US",
+        "South Central US",
+        "East US 2",
+        "North Europe",
+        "West Europe",
+        "Southeast Asia",
+        "East Asia",
+        "Japan West",
+        "Japan East"
+      ],
+      "metadata": {
+        "description": "Azure region where all resources will be deployed"
+      }
+    },
     "uniqueNamePrefix":{
       "type":"string",
       "metadata":{
@@ -32,7 +51,6 @@
     "addressPrefix":"10.0.0.0/16",
     "subnetPrefix":"10.0.0.0/24",
     "storageAccountType":"Standard_LRS",
-    "location":"[resourceGroup().location]",
     "virtualNetworkName":"virtualNetwork1",
     "publicIPAddressName":"publicIp1",
     "subnetName":"subnet1",
@@ -67,7 +85,7 @@
         "name":"storageLoop",
         "count":5
       },
-      "location":"[variables('location')]",
+      "location":"[parameters('location')]",
       "properties":{
         "accountType":"[variables('storageAccountType')]"
       }
@@ -76,7 +94,7 @@
       "apiVersion":"2015-06-15",
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
-      "location":"[variables('location')]",
+      "location":"[parameters('location')]",
       "properties":{
         "addressSpace":{
           "addressPrefixes":[
@@ -97,7 +115,7 @@
       "apiVersion":"2015-05-01-preview",
       "type":"Microsoft.Network/publicIPAddresses",
       "name":"[variables('publicIPAddressName')]",
-      "location":"[variables('location')]",
+      "location":"[parameters('location')]",
       "properties":{
         "publicIPAllocationMethod":"Dynamic",
         "dnsSettings":{
@@ -138,7 +156,7 @@
               },
               "protocol":"tcp",
               "frontendPortRangeStart":50000,
-              "frontendPortRangeEnd":50500,
+              "frontendPortRangeEnd":50099,
               "backendPort":22
             }
           }
@@ -149,7 +167,7 @@
       "type":"Microsoft.Compute/virtualMachineScaleSets",
       "apiVersion":"2015-06-15",
       "name":"[parameters('uniqueNamePrefix')]",
-      "location":"[variables('location')]",
+      "location":"[parameters('location')]",
       "tags":{
         "vmsstag1":"Myriad"
       },
