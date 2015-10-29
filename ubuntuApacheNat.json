@@ -248,36 +248,16 @@
                                     }
                                 }
                             },
-                            {
-                                "name": "negatflaskinstall",
-                                "properties": {
-                                    "publisher": "Microsoft.OSTCExtensions",
-                                    "type": "CustomScriptForLinux",
-                                    "typeHandlerVersion": "1.3",
-                                    "autoUpgradeMinorVersion": true,
-                                    "settings": {
-                                        "fileUris": [
-                                            "https://raw.githubusercontent.com/gatneil/complexTemplate/master/install_flask.sh"
-                                        ],
-                                        "commandToExecute": "sh install_flask.sh"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "negatrunflask",
-                                "properties": {
-                                    "publisher": "Microsoft.OSTCExtensions",
-                                    "type": "CustomScriptForLinux",
-                                    "typeHandlerVersion": "1.3",
-                                    "autoUpgradeMinorVersion": true,
-                                    "settings": {
-                                        "fileUris": [
-                                            https://raw.githubusercontent.com/gatneil/complexTemplate/master/hello_world.py
-                                        ],
-                                        "commandToExecute": "python hello_world.py"
-                                    }
-                                }
-                            }
+    			    {
+      				"name": "negatdockerextension",
+      				"properties": {
+        			    "publisher": "Microsoft.Azure.Extensions",
+        			    "type": "DockerExtension",
+        			    "typeHandlerVersion": "1.0",
+        			    "autoUpgradeMinorVersion": true,
+        			    "settings": {}
+      				}
+    			    }
                         ]
                     }
                 }
