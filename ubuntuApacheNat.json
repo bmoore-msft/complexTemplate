@@ -60,6 +60,7 @@
     "publicIPAddressID":"[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID":"[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "nicId":"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
+    "natPoolName": "[concat(variables('uniqueNamePrefix'), 'natpool')]",    
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
     "osType":{
       "publisher":"Canonical",
@@ -149,7 +150,7 @@
         ],
         "inboundNatPools":[
           {
-            "name":"natpool1",
+            "name":"[variables('natPoolName')]",
             "properties":{
               "frontendIPConfiguration":{
                 "id":"[variables('frontEndIPConfigID')]"
@@ -230,7 +231,7 @@
                         ],
                         "loadBalancerInboundNatPools":[
                           {
-                            "id":"[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('loadBalancerName'), '/inboundNatPools/natpool1')]"
+                            "id":"[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('loadBalancerName'), '/inboundNatPools/', variables('natPoolName'))]"
                           }
                         ]
                       }
