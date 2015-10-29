@@ -31,7 +31,8 @@
         "Standard_A5",
         "Standard_A6",
         "Standard_A7"
-      ]
+      ],
+      "defaultValue": "Standard_A2"
     },
     "uniqueNamePrefix":{
       "type":"string",
@@ -40,7 +41,7 @@
       }
     },
     "instanceCount":{
-      "type":"string",
+      "type":"int",
       "metadata":{
         "description":"Number of VM instances"
       }
@@ -59,6 +60,7 @@
     }
   },
   "variables":{
+    "apiVersion": "2015-06-15",
     "newStorageAccountSuffix":"[concat(parameters('uniqueNamePrefix'), 'sa')]",
     "addressPrefix":"10.0.0.0/16",
     "subnetPrefix":"10.0.0.0/24",
@@ -67,11 +69,8 @@
     "publicIPAddressName":"[concat(parameters('uniqueNamePrefix'), 'pip')]",
     "subnetName":"[concat(parameters('uniqueNamePrefix'), 'subnet')]",
     "loadBalancerName":"[concat(parameters('uniqueNamePrefix'), 'lb')]",
-    "nicName":"[concat(parameters('uniqueNamePrefix'), 'nic')]",
-    "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "publicIPAddressID":"[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID":"[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
-    "nicId":"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
     "natPoolName": "[concat(parameters('uniqueNamePrefix'), 'natpool')]",
     "bePoolName": "[concat(parameters('uniqueNamePrefix'), 'bepool')]",
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
@@ -94,7 +93,7 @@
     {
       "type":"Microsoft.Storage/storageAccounts",
       "name":"[concat(variables('storageAccountPrefix')[copyindex()], variables('newStorageAccountSuffix'))]",
-      "apiVersion":"2015-05-01-preview",
+      "apiVersion":"[variables('apiVersion')]",
       "copy":{
         "name":"storageLoop",
         "count":5
@@ -105,7 +104,7 @@
       }
     },
     {
-      "apiVersion":"2015-06-15",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
       "location":"[parameters('location')]",
@@ -126,7 +125,7 @@
       }
     },
     {
-      "apiVersion":"2015-05-01-preview",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/publicIPAddresses",
       "name":"[variables('publicIPAddressName')]",
       "location":"[parameters('location')]",
@@ -138,7 +137,7 @@
       }
     },
     {
-      "apiVersion":"2015-05-01-preview",
+      "apiVersion":"[variables('apiVersion')]",
       "name":"[variables('loadBalancerName')]",
       "type":"Microsoft.Network/loadBalancers",
       "location":"[resourceGroup().location]",
@@ -179,7 +178,7 @@
     },
     {
       "type":"Microsoft.Compute/virtualMachineScaleSets",
-      "apiVersion":"2015-06-15",
+      "apiVersion":"[variables('apiVersion')]",
       "name":"[parameters('uniqueNamePrefix')]",
       "location":"[parameters('location')]",
       "tags":{
