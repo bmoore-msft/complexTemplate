@@ -3,7 +3,10 @@
   "contentVersion":"1.0.0.0",
   "parameters":{
     "uniqueNamePrefix":{
-      "type":"string"
+      "type":"string",
+      "metadata":{
+        "description":"String used as base for naming resources"
+      }
     },
     "instanceCount":{
       "type":"string",
@@ -12,10 +15,16 @@
       }
     },
     "adminUsername":{
-      "type":"string"
+      "type":"string",
+      "metadata":{
+        "description":"Admin username on all VM's"
+      }
     },
     "adminPassword":{
-      "type":"securestring"
+      "type":"securestring",
+      "metadata":{
+        "description":"Admin password on all VM's"
+      }
     }
   },
   "variables":{
