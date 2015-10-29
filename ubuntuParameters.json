@@ -5,6 +5,9 @@
     "location": {
       "value": "West US"
     },
+    "vmSku": {
+      "value": "Standard_A2"
+    },
     "uniqueNamePrefix": {
       "value": "negatvs"
     },

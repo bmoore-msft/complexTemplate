@@ -21,6 +21,18 @@
         "description": "Azure region where all resources will be deployed"
       }
     },
+    "vmSku": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7"
+      ]
+    },
     "uniqueNamePrefix":{
       "type":"string",
       "metadata":{
@@ -71,11 +83,11 @@
     },
     "imageReference":"[variables('osType')]",
     "storageAccountPrefix":[
-      "b",
-      "h",
-      "n",
-      "t",
-      "z"
+      "a",
+      "g",
+      "m",
+      "s",
+      "y"
     ]
   },
   "resources":[
@@ -183,7 +195,7 @@
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
       "sku":{
-        "name":"Standard_A2",
+        "name":"[parameters('vmSku')]",
         "tier":"Standard",
         "capacity":"[parameters('instanceCount')]"
       },
