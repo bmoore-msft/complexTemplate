@@ -4,9 +4,9 @@
   "parameters": {
     "location": {
       "value": "West US"
-    }
+    },
     "uniqueNamePrefix": {
-      "value": "negatalldi"
+      "value": "negatvs"
     },
     "instanceCount": {
       "value": "5"

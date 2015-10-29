@@ -60,7 +60,7 @@
     "publicIPAddressID":"[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID":"[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "nicId":"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
-    "natPoolName": "[concat(variables('uniqueNamePrefix'), 'natpool')]",    
+    "natPoolName": "[concat(parameters('uniqueNamePrefix'), 'natpool')]",    
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
     "osType":{
       "publisher":"Canonical",

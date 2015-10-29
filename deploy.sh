@@ -1,0 +1,1 @@
+azure group create "negatvsrg" "West US" -f ubuntuApacheNat.json -d "negatvsdep" -e ubuntuParameters.json
