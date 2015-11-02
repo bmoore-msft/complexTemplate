@@ -34,10 +34,10 @@
       ],
       "defaultValue": "Standard_A1"
     },
-    "uniqueNamingSubstring":{
+    "vmssName":{
       "type":"string",
       "metadata":{
-        "description":"String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)"
+        "description":"String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)"
       },
       "maxLength": 9
     },
@@ -63,23 +63,32 @@
   },
   "variables":{
     "apiVersion": "2015-06-15",
-    "newStorageAccountSuffix":"[concat(parameters('uniqueNamingSubstring'), 'sa')]",
+    "storageAccountType":"Standard_LRS",
+    "newStorageAccountSuffix":"[concat(parameters('vmssName'), 'sa')]",
+    "uniqueStringArray": [
+      "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '0')), variables('newStorageAccountSuffix'))]",
+      "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '1')), variables('newStorageAccountSuffix'))]",
+      "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '2')), variables('newStorageAccountSuffix'))]",
+      "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '3')), variables('newStorageAccountSuffix'))]",
+      "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '4')), variables('newStorageAccountSuffix'))]"
+    ],
+    "vhdContainerName":"[concat(parameters('vmssName'), 'vhd')]",
+    "osDiskName":"[concat(parameters('vmssName'), 'osdisk')]",
     "addressPrefix":"10.0.0.0/16",
     "subnetPrefix":"10.0.0.0/24",
-    "storageAccountType":"Standard_LRS",
-    "virtualNetworkName":"[concat(parameters('uniqueNamingSubstring'), 'vnet')]",
-    "publicIPAddressName":"[concat(parameters('uniqueNamingSubstring'), 'pip')]",
-    "subnetName":"[concat(parameters('uniqueNamingSubstring'), 'subnet')]",
-    "loadBalancerName":"[concat(parameters('uniqueNamingSubstring'), 'lb')]",
+    "virtualNetworkName":"[concat(parameters('vmssName'), 'vnet')]",
+    "publicIPAddressName":"[concat(parameters('vmssName'), 'pip')]",
+    "subnetName":"[concat(parameters('vmssName'), 'subnet')]",
+    "loadBalancerName":"[concat(parameters('vmssName'), 'lb')]",
     "publicIPAddressID":"[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID":"[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
-    "natPoolName": "[concat(parameters('uniqueNamingSubstring'), 'natpool')]",
-    "bePoolName": "[concat(parameters('uniqueNamingSubstring'), 'bepool')]",
+    "natPoolName": "[concat(parameters('vmssName'), 'natpool')]",
+    "bePoolName": "[concat(parameters('vmssName'), 'bepool')]",
     "natStartPort": 50000,
     "natEndPort": 50099,
     "natBackendPort": 22,
-    "nicName":"[concat(parameters('uniqueNamingSubstring'), 'nic')]",
-    "ipConfigName":"[concat(parameters('uniqueNamingSubstring'), 'ipconfig')]",
+    "nicName":"[concat(parameters('vmssName'), 'nic')]",
+    "ipConfigName":"[concat(parameters('vmssName'), 'ipconfig')]",
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
     "osType":{
       "publisher":"Canonical",
@@ -113,7 +122,7 @@
     },
     {
       "type":"Microsoft.Storage/storageAccounts",
-      "name":"[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), copyIndex())), variables('newStorageAccountSuffix'))]",
+      "name":"[concat(uniqueStringArray[copyIndex()], variables('newStorageAccountSuffix'))]",
       "location":"[parameters('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "copy":{
@@ -132,7 +141,7 @@
       "properties":{
         "publicIPAllocationMethod":"Dynamic",
         "dnsSettings":{
-          "domainNameLabel":"[parameters('uniqueNamingSubstring')]"
+          "domainNameLabel":"[parameters('vmssName')]"
         }
       }
     },
@@ -178,15 +187,15 @@
     },
     {
       "type":"Microsoft.Compute/virtualMachineScaleSets",
-      "name":"[parameters('uniqueNamingSubstring')]",
+      "name":"[parameters('vmssName')]",
       "location":"[parameters('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "dependsOn":[
-        "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '0')), variables('newStorageAccountSuffix'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '1')), variables('newStorageAccountSuffix'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '2')), variables('newStorageAccountSuffix'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '3')), variables('newStorageAccountSuffix'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '4')), variables('newStorageAccountSuffix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', uniqueStringArray[0], variables('newStorageAccountSuffix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', uniqueStringArray[1], variables('newStorageAccountSuffix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', uniqueStringArray[2], variables('newStorageAccountSuffix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', uniqueStringArray[3], variables('newStorageAccountSuffix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', uniqueStringArray[4], variables('newStorageAccountSuffix'))]",
         "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
@@ -203,20 +212,20 @@
           "storageProfile":{
             "osDisk":{
               "vhdContainers":[
-                "[concat('https://', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '0')), variables('newStorageAccountSuffix'), '.blob.core.windows.net/vmss')]",
-                "[concat('https://', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '1')), variables('newStorageAccountSuffix'), '.blob.core.windows.net/vmss')]",
-                "[concat('https://', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '2')), variables('newStorageAccountSuffix'), '.blob.core.windows.net/vmss')]",
-                "[concat('https://', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '3')), variables('newStorageAccountSuffix'), '.blob.core.windows.net/vmss')]",
-                "[concat('https://', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '4')), variables('newStorageAccountSuffix'), '.blob.core.windows.net/vmss')]"
+                "[concat('https://', uniqueStringArray[0], variables('newStorageAccountSuffix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', uniqueStringArray[1], variables('newStorageAccountSuffix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', uniqueStringArray[2], variables('newStorageAccountSuffix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', uniqueStringArray[3], variables('newStorageAccountSuffix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', uniqueStringArray[4], variables('newStorageAccountSuffix'), '.blob.core.windows.net/', variables('vhdContainerName'))]"
               ],
-              "name":"vmssosdisk",
+              "name":"[variables('osDiskName')]",
               "caching":"ReadOnly",
               "createOption":"FromImage"
             },
             "imageReference":"[variables('imageReference')]"
           },
           "osProfile":{
-            "computerNamePrefix":"[parameters('uniqueNamingSubstring')]",
+            "computerNamePrefix":"[parameters('vmssName')]",
             "adminUsername":"[parameters('adminUsername')]",
             "adminPassword":"[parameters('adminPassword')]"
           },
