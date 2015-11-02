@@ -37,7 +37,7 @@
     "vmssName":{
       "type":"string",
       "metadata":{
-        "description":"String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)"
+        "description":"String used as a base for naming resources (9 characters or less)"
       },
       "maxLength": 9
     },
@@ -64,6 +64,7 @@
   "variables":{
     "apiVersion": "2015-06-15",
     "storageAccountType":"Standard_LRS",
+    "saCount":5,
     "newStorageAccountSuffix":"[concat(parameters('vmssName'), 'sa')]",
     "uniqueStringArray": [
       "[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '0')), variables('newStorageAccountSuffix'))]",
@@ -127,7 +128,7 @@
       "apiVersion":"[variables('apiVersion')]",
       "copy":{
         "name":"storageLoop",
-        "count":5
+        "count":"[variables('saCount')]"
       },
       "properties":{
         "accountType":"[variables('storageAccountType')]"
