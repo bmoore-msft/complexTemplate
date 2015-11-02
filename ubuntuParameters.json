@@ -8,7 +8,7 @@
     "vmSku": {
       "value": "Standard_A2"
     },
-    "uniqueNamePrefix": {
+    "uniqueNamingSubstring": {
       "value": "negatvs"
     },
     "instanceCount": {

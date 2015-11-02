@@ -32,18 +32,19 @@
         "Standard_A6",
         "Standard_A7"
       ],
-      "defaultValue": "Standard_A2"
+      "defaultValue": "Standard_A1"
     },
-    "uniqueNamePrefix":{
+    "uniqueNamingSubstring":{
       "type":"string",
       "metadata":{
-        "description":"String used as base for naming resources"
-      }
+        "description":"String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)String used as a base for naming resources (9 characters or less)"
+      },
+      "maxLength": 9
     },
     "instanceCount":{
       "type":"int",
       "metadata":{
-        "description":"Number of VM instances"
+        "description":"Number of VM instances (100 or less)"
       },
       "maxValue": 100
     },
@@ -62,18 +63,23 @@
   },
   "variables":{
     "apiVersion": "2015-06-15",
-    "newStorageAccountSuffix":"[concat(parameters('uniqueNamePrefix'), 'sa')]",
+    "newStorageAccountSuffix":"[concat(parameters('uniqueNamingSubstring'), 'sa')]",
     "addressPrefix":"10.0.0.0/16",
     "subnetPrefix":"10.0.0.0/24",
     "storageAccountType":"Standard_LRS",
-    "virtualNetworkName":"[concat(parameters('uniqueNamePrefix'), 'vnet')]",
-    "publicIPAddressName":"[concat(parameters('uniqueNamePrefix'), 'pip')]",
-    "subnetName":"[concat(parameters('uniqueNamePrefix'), 'subnet')]",
-    "loadBalancerName":"[concat(parameters('uniqueNamePrefix'), 'lb')]",
+    "virtualNetworkName":"[concat(parameters('uniqueNamingSubstring'), 'vnet')]",
+    "publicIPAddressName":"[concat(parameters('uniqueNamingSubstring'), 'pip')]",
+    "subnetName":"[concat(parameters('uniqueNamingSubstring'), 'subnet')]",
+    "loadBalancerName":"[concat(parameters('uniqueNamingSubstring'), 'lb')]",
     "publicIPAddressID":"[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID":"[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
-    "natPoolName": "[concat(parameters('uniqueNamePrefix'), 'natpool')]",
-    "bePoolName": "[concat(parameters('uniqueNamePrefix'), 'bepool')]",
+    "natPoolName": "[concat(parameters('uniqueNamingSubstring'), 'natpool')]",
+    "bePoolName": "[concat(parameters('uniqueNamingSubstring'), 'bepool')]",
+    "natStartPort": 50000,
+    "natEndPort": 50099,
+    "natBackendPort": 22,
+    "nicName":"[concat(parameters('uniqueNamingSubstring'), 'nic')]",
+    "ipConfigName":"[concat(parameters('uniqueNamingSubstring'), 'ipconfig')]",
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
     "osType":{
       "publisher":"Canonical",
@@ -85,23 +91,10 @@
   },
   "resources":[
     {
-      "type":"Microsoft.Storage/storageAccounts",
-      "name":"[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), copyIndex())), variables('newStorageAccountSuffix'))]",
-      "apiVersion":"[variables('apiVersion')]",
-      "copy":{
-        "name":"storageLoop",
-        "count":5
-      },
-      "location":"[parameters('location')]",
-      "properties":{
-        "accountType":"[variables('storageAccountType')]"
-      }
-    },
-    {
-      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
       "location":"[parameters('location')]",
+      "apiVersion":"[variables('apiVersion')]",
       "properties":{
         "addressSpace":{
           "addressPrefixes":[
@@ -119,22 +112,35 @@
       }
     },
     {
+      "type":"Microsoft.Storage/storageAccounts",
+      "name":"[concat(uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), copyIndex())), variables('newStorageAccountSuffix'))]",
+      "location":"[parameters('location')]",
       "apiVersion":"[variables('apiVersion')]",
+      "copy":{
+        "name":"storageLoop",
+        "count":5
+      },
+      "properties":{
+        "accountType":"[variables('storageAccountType')]"
+      }
+    },
+    {
       "type":"Microsoft.Network/publicIPAddresses",
       "name":"[variables('publicIPAddressName')]",
       "location":"[parameters('location')]",
+      "apiVersion":"[variables('apiVersion')]",
       "properties":{
         "publicIPAllocationMethod":"Dynamic",
         "dnsSettings":{
-          "domainNameLabel":"[parameters('uniqueNamePrefix')]"
+          "domainNameLabel":"[parameters('uniqueNamingSubstring')]"
         }
       }
     },
     {
-      "apiVersion":"[variables('apiVersion')]",
-      "name":"[variables('loadBalancerName')]",
       "type":"Microsoft.Network/loadBalancers",
+      "name":"[variables('loadBalancerName')]",
       "location":"[resourceGroup().location]",
+      "apiVersion":"[variables('apiVersion')]",
       "dependsOn":[
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
       ],
@@ -162,9 +168,9 @@
                 "id":"[variables('frontEndIPConfigID')]"
               },
               "protocol":"tcp",
-              "frontendPortRangeStart":50000,
-              "frontendPortRangeEnd":50099,
-              "backendPort":22
+              "frontendPortRangeStart": "[variables('natStartPort')]",
+              "frontendPortRangeEnd": "[variables('natEndPort')]",
+              "backendPort": "[variables('natBackendPort')]"
             }
           }
         ]
@@ -172,12 +178,9 @@
     },
     {
       "type":"Microsoft.Compute/virtualMachineScaleSets",
-      "apiVersion":"[variables('apiVersion')]",
-      "name":"[parameters('uniqueNamePrefix')]",
+      "name":"[parameters('uniqueNamingSubstring')]",
       "location":"[parameters('location')]",
-      "tags":{
-        "vmsstag1":"Myriad"
-      },
+      "apiVersion":"[variables('apiVersion')]",
       "dependsOn":[
         "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '0')), variables('newStorageAccountSuffix'))]",
         "[concat('Microsoft.Storage/storageAccounts/', uniqueString(concat(resourceGroup().id, deployment().name, variables('newStorageAccountSuffix'), '1')), variables('newStorageAccountSuffix'))]",
@@ -213,19 +216,19 @@
             "imageReference":"[variables('imageReference')]"
           },
           "osProfile":{
-            "computerNamePrefix":"[parameters('uniqueNamePrefix')]",
+            "computerNamePrefix":"[parameters('uniqueNamingSubstring')]",
             "adminUsername":"[parameters('adminUsername')]",
             "adminPassword":"[parameters('adminPassword')]"
           },
           "networkProfile":{
             "networkInterfaceConfigurations":[
               {
-                "name":"nic1",
+                "name":"[variables('nicName')]",
                 "properties":{
                   "primary":"true",
                   "ipConfigurations":[
                     {
-                      "name":"ip1",
+                      "name":"[variables('ipConfigName')]",
                       "properties":{
                         "subnet":{
                           "id":"[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'), '/subnets/', variables('subnetName'))]"
