@@ -8,7 +8,10 @@
     "vmSku": {
       "value": "Standard_A2"
     },
-    "uniqueNamingSubstring": {
+    "ubuntuOSVersion": {
+      "value": "15.04"
+    },
+    "vmssName": {
       "value": "negatvs"
     },
     "instanceCount": {
