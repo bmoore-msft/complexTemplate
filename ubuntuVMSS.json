@@ -8,8 +8,9 @@
     },
     "ubuntuOSVersion": {
       "type": "string",
-      "defaultValue": "15.04",
+      "defaultValue": "15.10",
       "allowedValues": [
+        "15.10",
         "15.04",
 	"14.04.2-LTS"
       ],
