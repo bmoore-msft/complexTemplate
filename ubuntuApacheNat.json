@@ -34,13 +34,13 @@
     "adminUsername":{
       "type":"string",
       "metadata":{
-        "description":"Admin username on all VM's"
+        "description":"Admin username on all VMs"
       }
     },
     "adminPassword":{
       "type":"securestring",
       "metadata":{
-        "description":"Admin password on all VM's"
+        "description":"Admin password on all VMs"
       }
     }
   },
