@@ -2,25 +2,6 @@
   "$schema":"http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
   "contentVersion":"1.0.0.0",
   "parameters":{
-    "location": {
-      "type": "string",
-      "allowedValues": [
-        "East US",
-        "West US",
-        "Central US",
-        "South Central US",
-        "East US 2",
-        "North Europe",
-        "West Europe",
-        "Southeast Asia",
-        "East Asia",
-        "Japan West",
-        "Japan East"
-      ],
-      "metadata": {
-        "description": "Azure region where all resources will be deployed"
-      }
-    },
     "vmSku": {
       "type": "string",
       "defaultValue": "Standard_A1"
@@ -65,6 +46,7 @@
   },
   "variables":{
     "apiVersion": "2015-06-15",
+    "location": "[resourceGroup().location]",
     "storageAccountType":"Standard_LRS",
     "saCount":5,
     "newStorageAccountSuffix":"[concat(parameters('vmssName'), 'sa')]",
@@ -105,7 +87,7 @@
     {
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
-      "location":"[parameters('location')]",
+      "location":"[variables('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "properties":{
         "addressSpace":{
@@ -126,7 +108,7 @@
     {
       "type":"Microsoft.Storage/storageAccounts",
       "name":"[concat(variables('uniqueStringArray')[copyIndex()], variables('newStorageAccountSuffix'))]",
-      "location":"[parameters('location')]",
+      "location":"[variables('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "copy":{
         "name":"storageLoop",
@@ -139,7 +121,7 @@
     {
       "type":"Microsoft.Network/publicIPAddresses",
       "name":"[variables('publicIPAddressName')]",
-      "location":"[parameters('location')]",
+      "location":"[variables('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "properties":{
         "publicIPAllocationMethod":"Dynamic",
@@ -151,7 +133,7 @@
     {
       "type":"Microsoft.Network/loadBalancers",
       "name":"[variables('loadBalancerName')]",
-      "location":"[resourceGroup().location]",
+      "location":"[variables('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "dependsOn":[
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
@@ -191,7 +173,7 @@
     {
       "type":"Microsoft.Compute/virtualMachineScaleSets",
       "name":"[parameters('vmssName')]",
-      "location":"[parameters('location')]",
+      "location":"[variables('location')]",
       "apiVersion":"[variables('apiVersion')]",
       "dependsOn":[
         "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[0], variables('newStorageAccountSuffix'))]",
