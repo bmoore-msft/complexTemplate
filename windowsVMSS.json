@@ -1,20 +1,21 @@
 {
-  "$schema":"http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+  "$schema":"http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion":"1.0.0.0",
   "parameters":{
     "vmSku": {
       "type": "string",
       "defaultValue": "Standard_A1"
     },
-    "ubuntuOSVersion": {
+    "windowsOSVersion": {
       "type": "string",
-      "defaultValue": "15.04",
+      "defaultValue": "2012-R2-Datacenter",
       "allowedValues": [
-        "15.04",
-	"14.04.2-LTS"
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter"
       ],
       "metadata": {
-        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version. Allowed values are: 15.04, 14.04.2-LTS."
+        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version. Allowed values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter."
       }
     },
     "vmssName":{
@@ -71,14 +72,14 @@
     "bePoolName": "[concat(parameters('vmssName'), 'bepool')]",
     "natStartPort": 50000,
     "natEndPort": 50099,
-    "natBackendPort": 22,
+    "natBackendPort": 3389,
     "nicName":"[concat(parameters('vmssName'), 'nic')]",
     "ipConfigName":"[concat(parameters('vmssName'), 'ipconfig')]",
     "frontEndIPConfigID":"[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
     "osType":{
-      "publisher":"Canonical",
-      "offer":"UbuntuServer",
-      "sku":"[parameters('ubuntuOSVersion')]",
+      "publisher":"MicrosoftWindowsServer",
+      "offer":"WindowsServer",
+      "sku":"[parameters('windowsOSVersion')]",
       "version":"latest"
     },
     "imageReference":"[variables('osType')]"
