@@ -1,0 +1,27 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmSSPrefix": {
+      "value": "multVMSS"
+    },
+    "numberOfVMSS": {
+      "value": 5
+    },
+    "instanceCountPerVMSS": {
+      "value": "5"
+    },
+    "newVNETName": {
+      "value": "multiVMSSVnet"
+    },
+    "newStorageAccountPrefix": {
+      "value": "multVMSS"
+    },
+    "adminUsername": {
+      "value": "mult"
+    },
+    "adminPassword": {
+      "value": "P4$$w0rd"
+    }
+  }
+}
