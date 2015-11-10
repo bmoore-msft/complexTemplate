@@ -33,6 +33,7 @@
         "subnetPrefix": "10.0.0.0/24",
         "storageAccountType": "Standard_LRS",
         "location": "[resourceGroup().location]",
+    	"vhdContainerName": "vhds",
     	"uniqueStringArray": [
       	  "[concat(uniqueString(concat(resourceGroup().id, parameters('newStorageAccountPrefix'), '0')))]",
           "[concat(uniqueString(concat(resourceGroup().id, parameters('newStorageAccountPrefix'), '1')))]",
