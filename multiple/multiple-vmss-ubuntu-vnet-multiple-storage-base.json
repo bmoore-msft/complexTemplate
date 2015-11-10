@@ -1,0 +1,132 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters" : {
+       "vmSSName": {
+            "type": "string"
+        },
+        "instanceCount" : {
+            "type": "string",
+            "metadata": {
+                "description": "Number of VM instances"
+            }
+        },
+      	"newStorageAccountPrefix" : {
+           "type": "string"
+        },
+	    "vnetName": {
+            "type": "string"
+        },
+	    "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+           "type": "securestring"
+        }
+   },
+   "variables": {
+        "imagePublisher": "Canonical",
+        "imageOffer": "UbuntuServer",
+        "imageVersion": "15.04",
+        "addressPrefix": "10.0.0.0/16",
+        "subnetName": "subnet",
+        "subnetPrefix": "10.0.0.0/24",
+        "storageAccountType": "Standard_LRS",
+        "location": "[resourceGroup().location]",
+    	"uniqueStringArray": [
+      	  "[concat(uniqueString(concat(resourceGroup().id, variables('newStorageAccountPrefix'), '0')))]",
+          "[concat(uniqueString(concat(resourceGroup().id, variables('newStorageAccountPrefix'), '1')))]",
+          "[concat(uniqueString(concat(resourceGroup().id, variables('newStorageAccountPrefix'), '2')))]",
+          "[concat(uniqueString(concat(resourceGroup().id, variables('newStorageAccountPrefix'), '3')))]",
+          "[concat(uniqueString(concat(resourceGroup().id, variables('newStorageAccountPrefix'), '4')))]"
+    ]
+   },
+   "resources": [
+     {
+        "type": "Microsoft.Storage/storageAccounts",
+      	"name":"[concat(variables('uniqueStringArray')[copyIndex()], variables('newStorageAccountPrefix'))]",
+        "apiVersion": "2015-05-01-preview",
+        "copy": {
+          "name": "storageLoop",
+          "count": 5
+        },
+        "location": "[variables('location')]",
+        "properties": {
+            "accountType": "[variables('storageAccountType')]"
+        }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "apiVersion": "2015-06-15",
+      "name": "[parameters('vmSSName')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "vmsstag1": "Myriad"
+       },
+       "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[0], variables('newStorageAccountPrefix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[1], variables('newStorageAccountPrefix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[2], variables('newStorageAccountPrefix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[3], variables('newStorageAccountPrefix'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[4], variables('newStorageAccountPrefix'))]"
+       ],
+       "sku": {
+         "name": "Standard_A1",
+         "tier": "Standard",
+         "capacity": "[parameters('instanceCount')]"
+      },
+      "properties": {
+         "upgradePolicy": {
+         "mode": "Automatic"
+        },
+        "virtualMachineProfile": {
+          "storageProfile": {
+            "osDisk": {
+              "vhdContainers": [
+                "[concat('https://', variables('uniqueStringArray')[0], variables('newStorageAccountPrefix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', variables('uniqueStringArray')[1], variables('newStorageAccountPrefix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', variables('uniqueStringArray')[2], variables('newStorageAccountPrefix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', variables('uniqueStringArray')[3], variables('newStorageAccountPrefix'), '.blob.core.windows.net/', variables('vhdContainerName'))]",
+                "[concat('https://', variables('uniqueStringArray')[4], variables('newStorageAccountPrefix'), '.blob.core.windows.net/', variables('vhdContainerName'))]"
+              ],
+              "name": "vmssosdisk",
+              "caching": "ReadOnly",
+              "createOption": "FromImage"
+            },
+            "imageReference": {
+              "publisher": "[variables('imagePublisher')]",
+              "offer": "[variables('imageOffer')]",
+              "sku": "[variables('imageVersion')]",
+              "version": "latest"
+            }
+          },
+          "osProfile": {
+            "computerNamePrefix": "[parameters('vmSSName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]"
+          },
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+             {
+               "name": "[concat('nic', parameters('vmSSName'))]",
+               "properties": {
+               "primary": "true",
+                 "ipConfigurations": [
+                  {
+	            "name": "[concat('ipconfig', parameters('vmSSName'))]",
+                    "properties": {
+                      "subnet": {
+                        "Id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetName'), '/subnets/', variables('subnetName'))]"
+                      }
+                    }
+                  }
+                 ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+  ]
+}
