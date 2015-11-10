@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmSSPrefix": {
-      "value": "multVMSS"
+      "value": "multiVMSS"
     },
     "numberOfVMSS": {
       "value": 5
@@ -15,10 +15,10 @@
       "value": "multiVMSSVnet"
     },
     "newStorageAccountPrefix": {
-      "value": "multVMSS"
+      "value": "multiVMSS"
     },
     "adminUsername": {
-      "value": "mult"
+      "value": "multi"
     },
     "adminPassword": {
       "value": "P4$$w0rd"
