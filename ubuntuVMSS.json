@@ -12,7 +12,7 @@
       "allowedValues": [
         "15.10",
         "15.04",
-	"14.04.2-LTS"
+        "14.04.2-LTS"
       ],
       "metadata": {
         "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version. Allowed values are: 15.10, 15.04, 14.04.2-LTS."
@@ -188,11 +188,7 @@
         "displayName": "VMScaleSet"
       },
       "dependsOn":[
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[0])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[1])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[2])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[3])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[4])]",
+        "storageLoop",
         "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
