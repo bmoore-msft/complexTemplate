@@ -188,11 +188,7 @@
         "displayName": "VMScaleSet"
       },
       "dependsOn":[
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[0])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[1])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[2])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[3])]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('uniqueStringArray')[4])]",
+        "storageLoop",
         "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
